@@ -81,7 +81,7 @@ async function login(req, res, next) {
 const logout = async (req,res,next) => {
   try{
     req.session.destroy();//destroys the whole session;
-    res.redirect("/GetAccounts")//for now redirecting to GetAccounts
+    res.json({message:"Logged out!"});
   }catch(err){
     next(new AppErr("Already Logout!",500));
   }

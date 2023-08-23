@@ -2,30 +2,37 @@ const Posts = require("../models/Posts");
 const User = require("../models/User");
 const AppErr = require("../utils/AppErr");
 
+
+//Creates a post which then 
+//push post.id into user's posts array
 const CreatePost = async (req,res,next) => {
+  console.log(req);
     try {
-        const user = await User.findById(req.body.User);
+        //Finding user in session
+        const user = await User.findById(req.session.userAuth);
         if(user){
             const SavedPost = await Posts.create({
                 title:req.body.Title,
-                image:req.body.Image,
+                image:req.file.path,
                 content:req.body.Content,
-                User:req.body.User,
+                User:req.session.userAuth,
             })
+            //pushing post_id into users post Array
             user.Posts.push(SavedPost._id);
             await user.save();
             res.json({user});
         }else{
-            throw new Error("User Not Found!")
+            throw new AppErr("User Not Found!",401)
         }
     } catch (error) {
-        next(new AppErr(error.message,500));
+        next(error);
     }
 }
 
 const GetPosts = async (req,res,next) => {
     try {
-        const posts = await Posts.find();
+        //finding user post through user id in posts objects
+        const posts = await Posts.find({User:req.session.userAuth});
         res.json(posts)
       } catch (error) {
         next(new AppErr(error.message,500));

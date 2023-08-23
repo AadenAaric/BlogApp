@@ -7,11 +7,11 @@ const AppErr = require("../utils/AppErr")
 
 const CreateComment = async (req,res,next) => {
     try {
-        const user = await User.findById(req.body.User);
+        const user = await User.findById(req.session.userAuth);
         const post = await Posts.findById(req.body.Post);
         if(user && post){
             const SavedComment = await Comments.create({
-                User:req.body.User,
+                User:req.session.userAuth,
                 Post:req.body.Post,
                 content:req.body.content
             })
